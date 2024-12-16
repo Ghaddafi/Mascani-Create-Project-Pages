@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Build with Mascani.io </title>
+    <link rel="icon" href="logo.svg" type="image/png">
+    <style>
+        /* General Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('berna.jpg'); /* Add the background image */
+            background-size: cover; /* Ensure the image covers the entire page */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Ensure the image does not repeat */
+            background-attachment: fixed; /* Optional: Keeps the background fixed during scrolling */
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: black;
+}
+
+
+
+        /* Progress Bar */
+        .progress-bar-container { background: #e9ecef; height: 10px; border-radius: 5px; margin-bottom: 20px; position: relative; }
+        .progress-bar { background: black; height: 100%; width: 0%; border-radius: 5px; transition: width 0.3s ease; }
+
+        /* Form Steps */
+        .form-step { display: none; }
+        .form-step.active { display: block; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ced4da; border-radius: 5px; font-size: 16px; }
+        .error { color: #dc3545; font-size: 14px; display: none; margin-top: -8px; }
+
+        /* Buttons */
+        .button-container { display: flex; justify-content: space-between; margin-top: 20px; }
+        .button-container.centered { justify-content: center; }
+        button { padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; background: black; color: white; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 10px; text-align: center; width: 90%; max-width: 800px; position: relative; }
+        .modal-content h2 { margin-bottom: 10px; }
+        .modal-content p { color: #6c757d; margin-bottom: 20px; }
+
+        /* Partner Banks Modal */
+        .partner-banks-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        .bank-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 150px;
+            flex: 1 0 120px;
+        }
+        .bank-info img { width: 100px; height: 100px; object-fit: cover; margin-bottom: 10px; border-radius: 5px; }
+        .bank-info p { margin: 5px 0; font-size: 16px; color: #495057; font-weight: bold; }
+        .bank-info .rate { font-size: 14px; color: #6c757d; }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #f1f1f1;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            color: #495057;
+        }
+
+        .close-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Preview Modal */
+        .preview-table { width: 100%; text-align: left; border-collapse: collapse; margin: 10px 0; }
+        .preview-table th, .preview-table td { padding: 8px 10px; border: 1px solid #ddd; }
+        .preview-table th { background: #f8f9fa; font-weight: bold; }
+
+        /* Congratulations Modal */
+        .congratulations-modal {
+            animation: fadeIn 0.6s ease, scaleUp 0.5s ease;
+            padding: 30px;
+            border: 2px solid #28a745;
+        }
+        .congratulations-modal .modal-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .congratulations-modal .modal-message h2 {
+            color: #28a745;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        .congratulations-modal .modal-message p {
+            color: #495057;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes scaleUp {
+            from { transform: scale(0.8); }
+            to { transform: scale(1); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Let's Get to know Your Project </h1>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <!-- Form Steps -->
+        <div id="step1" class="form-step active">
+            <h3>What’s your name?</h3>
+            <input type="text" id="name" placeholder="Let us know how we should call you" oninput="updateState('name', this.value)">
+            <p class="error" id="error-name">Please enter your name.</p>
+            <div class="button-container">
+                <button onclick="nextStep(1)">Next</button>
+            </div>
+        </div>
+
+        <div id="step2" class="form-step">
+            <h3>Type your email? </h3>
+            <input type="email" id="email" placeholder="This is how we shall update you on the status of your project" oninput="updateState('email', this.value)">
+            <p class="error" id="error-email">Please enter a valid email.</p>
+            <div class="button-container">
+                <button onclick="prevStep(2)">Back</button>
+                <button onclick="nextStep(2)">Next</button>
+            </div>
+        </div>
+
+        <div id="step3" class="form-step">
+            <h3>What’s your phone number?</h3>
+            <input type="tel" id="phone" placeholder="We'll use this to speed up communications" oninput="updateState('phone', this.value)">
+            <p class="error" id="error-phone">Please enter your phone number.</p>
+            <div class="button-container">
+                <button onclick="prevStep(3)">Back</button>
+                <button onclick="nextStep(3)">Next</button>
+            </div>
+        </div>
+
+        <div id="step4" class="form-step">
+            <h3>What do you plan to build? </h3>
+            <input type="text" id="location" placeholder="Tell us the nature of your project" oninput="updateState('location', this.value)">
+            <p class="error" id="error-location">Please enter your location.</p>
+            <div class="button-container">
+                <button onclick="prevStep(4)">Back</button>
+                <button onclick="nextStep(4)">Next</button>
+            </div>
+        </div>
+
+        <div id="step5" class="form-step">
+            <h3> If you loved a design from our site, please enter the design ID below.  </h3>
+            <input type="text" id="budget" placeholder=" Enter design ID here, or type 'no' if you have your own plan" oninput="updateState('budget', this.value)">
+            <p class="error" id="error-budget">Please enter design ID </p>
+            <div class="button-container">
+                <button onclick="prevStep(5)">Back</button>
+                <button onclick="nextStep(5)">Next</button>
+            </div>
+        </div>
+
+        <div id="step6" class="form-step">
+            <h3>Would you like us to offer pre-build services, or build the entire project for you? </h3>
+            <input type="text" id="projectType" placeholder=" let us know how you would like to work with us" oninput="updateState('projectType', this.value)">
+            <p class="error" id="error-projectType">Please tell us how we can be of value.</p>
+            <div class="button-container">
+                <button onclick="prevStep(6)">Back</button>
+                <button onclick="nextStep(6)">Next</button>
+            </div>
+        </div>
+
+        <div id="step7" class="form-step">
+            <h3>What’s your project timeline?</h3>
+            <input type="text" id="timeline" placeholder="Tell us when you would like to start and finish" oninput="updateState('timeline', this.value)">
+            <p class="error" id="error-timeline">Please enter your timeline.</p>
+            <div class="button-container">
+                <button onclick="prevStep(7)">Back</button>
+                <button onclick="nextStep(7)">Next</button>
+            </div>
+        </div>
+
+        <div id="step8" class="form-step">
+            <h3>Would you like to finance this project through our partner banks?</h3>
+            <select id="financing" onchange="updateState('financing', this.value); handleFinancingChange();">
+                <option value="">Select an option</option>
+                <option value="self-finance">Self-finance</option>
+                <option value="co-finance">Co-finance with a partner bank</option>
+            </select>
+            <p class="error" id="error-financing">Please select a financing option.</p>
+
+            <!-- Bank Selection for Co-financing -->
+            <div id="financing-follow-up" style="display:none;">
+                <input type="text" id="bankName" placeholder="Enter your chosen bank" oninput="updateState('bankName', this.value)">
+                <button onclick="showBankGallery()">View Partner Banks</button>
+            </div>
+
+            <div class="button-container">
+                <button onclick="prevStep(8)">Back</button>
+                <button onclick="previewForm()">Preview</button>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Partner Banks Modal -->
+    <div class="modal" id="bankModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('bankModal')">&times;</button>
+            <h2>Our Partner Banks</h2>
+            <div class="partner-banks-wrapper">
+                <div class="bank-info">
+                    <img src="crdb.webp" alt="Bank 1">
+                    <p>CRDB Bank PLC</p>
+                    <p class="rate">Interest Rate: 3.5%</p>
+                </div>
+                <div class="bank-info">
+                    <img src="nmb.jpg" alt="Bank 2">
+                    <p> NMB Bank</p>
+                    <p class="rate">Interest Rate: 3.8%</p>
+                </div>
+                <div class="bank-info">
+                    <img src="absa.png" alt="Bank 3">
+                    <p> ABSA </p>
+                    <p class="rate">Interest Rate: 4.0%</p>
+                </div>
+                <div class="bank-info">
+                    <img src="nbc.jpeg" alt="Bank 4">
+                    <p> NBC Bank </p>
+                    <p class="rate">Interest Rate: 3.6%</p>
+                </div>
+            </div>
+            <button onclick="closeModal('bankModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <h2>Preview Your Responses</h2>
+            <table class="preview-table">
+                <tr><th>Name</th><td id="preview-name"></td></tr>
+                <tr><th>Email</th><td id="preview-email"></td></tr>
+                <tr><th>Phone</th><td id="preview-phone"></td></tr>
+                <tr><th> Project Type </th><td id="preview-location"></td></tr>
+                <tr><th> Design ID </th><td id="preview-budget"></td></tr>
+                <tr><th>Project Type</th><td id="preview-projectType"></td></tr>
+                <tr><th>Timeline</th><td id="preview-timeline"></td></tr>
+                <tr><th>Financing</th><td id="preview-financing"></td></tr>
+                <tr id="bank-row" style="display:none;"><th>Bank Name</th><td id="preview-bankName"></td></tr>
+            </table>
+            <button onclick="submitForm()">Submit</button>
+            <button onclick="editInformation()">Edit</button>
+        </div>
+    </div>
+
+    <div class="modal" id="congratulationsModal">
+        <div class="modal-content congratulations-modal">
+            <button class="close-btn" onclick="closeModal('congratulationsModal')">&times;</button>
+            <div class="modal-message">
+                <h2>🎉 Congratulations!</h2>
+                <p>Thank you for your submission. We’ll review your information and reach out to you shortly. Your application tracking ID is 250989. Use this to track the status of your application on the link below. </p> <br>
+                <button onclick="window.location.href='https://applications.mascani.io/'">Track Review Status</button>
+
+            </div>
+        </div>
+    </div>    
+    
+
+    <script>
+        let formState = {
+            name: '',
+            email: '',
+            phone: '',
+            location: '',
+            budget: '',
+            projectType: '',
+            timeline: '',
+            financing: '',
+            bankName: ''
+        };
+
+        let currentStep = 1;
+
+        function nextStep(step) {
+            if (validateStep(step)) {
+                document.getElementById(`step${step}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgressBar();
+            }
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${step}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateProgressBar();
+        }
+
+        function validateStep(step) {
+            const value = document.getElementById(Object.keys(formState)[step - 1]).value;
+            if (!value) {
+                document.getElementById(`error-${Object.keys(formState)[step - 1]}`).style.display = 'block';
+                return false;
+            }
+            document.getElementById(`error-${Object.keys(formState)[step - 1]}`).style.display = 'none';
+            return true;
+        }
+
+        function updateState(key, value) {
+            formState[key] = value;
+            if (key === 'financing' && value === 'co-finance') {
+                document.getElementById('financing-follow-up').style.display = 'block';
+                document.getElementById('preview-btn-container').style.display = 'block';
+            } else if (key === 'financing') {
+                document.getElementById('financing-follow-up').style.display = 'none';
+                document.getElementById('preview-btn-container').style.display = 'none';
+            }
+        }
+
+        function handleFinancingChange() {
+            const financingOption = formState.financing;
+            document.getElementById('financingFollowUp').style.display = financingOption === 'co-finance' ? 'block' : 'none';
+        }
+
+        function updateProgressBar() {
+            const progress = (currentStep / 8) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        function previewForm() {
+            Object.keys(formState).forEach(key => {
+                document.getElementById(`preview-${key}`).textContent = formState[key];
+            });
+
+            const bankRow = document.getElementById('bank-row');
+            if (formState.financing === 'co-finance') {
+                bankRow.style.display = '';
+                document.getElementById('preview-bankName').textContent = formState.bankName;
+            } else {
+                bankRow.style.display = 'none';
+            }
+            openModal('previewModal');
+        }
+
+        function showBankGallery() {
+            openModal('bankModal');
+        }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function editInformation() {
+            closeModal('previewModal');
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            currentStep = 8; // Go back to the final step to edit.
+        }
+
+
+        function submitForm() {
+            closeModal('previewModal');
+            openModal('congratulationsModal');
+        }
+
+    </script>
+</body>
+</html>
